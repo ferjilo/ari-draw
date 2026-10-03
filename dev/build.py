@@ -34,7 +34,7 @@ doc = f'''<!doctype html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Ari Draw">
-<meta name="theme-color" content="#FFFDF7">
+<meta name="theme-color" content="#FFF5EA">
 <link rel="apple-touch-icon" href="data:image/png;base64,{icon}">
 {head_part}<style>body{{margin:0}}[hidden]{{display:none!important}}:root{{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}}
 {css}</style>

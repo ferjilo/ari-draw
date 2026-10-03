@@ -54,7 +54,7 @@ dev/setup.sh             Dependencias (+ modelos de voz con `voz`).
 Claves: `hola`, `<id>-<n>` (paso n), `<id>-0i` (intro + paso 0), `<id>-fin-nueva`, `<id>-fin-otra`. Textos de intro y final: `introText` / `finText` en `src/app.html`. Si cambias un texto ya grabado, regraba esa clave (`gen_audio.py <clave>`). La app usa la voz del sistema solo si falta el mp3.
 
 ## Interfaz
-Tipos: Grandstander (títulos) + Nunito. Fondo de cuaderno cuadriculado, botones gordos con sombra. Colores como variables en `:root`. Guardado local en el iPad (`localStorage`): `ari.done`, `ari.voz`, `ari.nivel`, `ari.voice`.
+Estilo **Pastel Pop** (P9): tipos Fredoka (títulos) + Nunito. Fondo crema con manchas suaves; en la lección el fondo toma el pastel del animal (`--a` + `color-mix`, clase `in-lesson` en `<html>`). Botones blancos o coral sin borde, con sombra de color debajo. Mascota con bocadillo para las instrucciones y caminito numerado de pasos (`#dots`). Colores como variables en `:root` (`--pen` = tinta de los dibujos). Mockups de referencia en `dev/mockups/` (`gen.py`). Guardado local en el iPad (`localStorage`): `ari.done`, `ari.voz`, `ari.nivel`, `ari.voice`.
 
 ## Git
 `git -c user.name="Fernando" -c user.email="ferjilo@users.noreply.github.com" commit -m "..."` y `git push origin main`.

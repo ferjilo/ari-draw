@@ -1,128 +1,137 @@
 <title>Ari Draw</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@600;800&family=Nunito:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap">
 <style>
-/* Layout: hoja de cuaderno cuadriculado del cole; app de una pantalla: lienzo cuadrado + instrucción grande + botones gordos de juguete */
+/* Estilo "Pastel Pop" (P9): crema cálida con manchas suaves, cada animal con su color pastel, botones gordos sin bordes negros
+   (sombra de color por debajo), mascota que habla en bocadillo y caminito numerado de pasos. */
 :root{
-  --paper:#FFFDF7;
-  --grid:#DCE7F4;
-  --margin:#F3B0AA;
-  --ink:#2F3A56;
-  --ink-soft:#6B7591;
-  --prev:#B4BCCE;
+  --bg:#FFF5EA;
+  --ink:#2B2A35;          /* texto de la interfaz */
+  --pen:#2F3A56;          /* tinta de los dibujos */
+  --ink-soft:#7C7480;
+  --prev:#BAC1D3;
   --card:#FFFFFF;
-  --gold:#F2B632;
-  --a:#D9622B;
-  --font-display:"Grandstander","Chalkboard SE","Comic Sans MS",system-ui,sans-serif;
+  --edge:#F1DDC8;         /* sombra de los botones blancos */
+  --acc:#FF6B4A;          /* coral: botones principales */
+  --acc-d:#D9482A;
+  --teal:#3DB8A8;
+  --sun:#FFB830;
+  --gold:#FFC93C;
+  --a:#D9622B;            /* color del animal (lo cambia la lección) */
+  --font-display:"Fredoka","Chalkboard SE","Comic Sans MS",system-ui,sans-serif;
   --font-body:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   color-scheme:light;
 }
 html,body{height:100%}
 body{
-  background-color:var(--paper);
-  background-image:
-    linear-gradient(var(--grid) 1px,transparent 1px),
-    linear-gradient(90deg,var(--grid) 1px,transparent 1px);
-  background-size:26px 26px;
-  color:var(--ink);
-  font-family:var(--font-body);
-  font-weight:600;
-  font-size:18px;
-  -webkit-tap-highlight-color:transparent;
-  -webkit-user-select:none;user-select:none;
+  background:var(--bg);color:var(--ink);
+  font-family:var(--font-body);font-weight:700;font-size:18px;
+  -webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;
+  transition:background-color .4s ease;
 }
-@media (min-width:760px){
-  body{
-    background-image:
-      linear-gradient(90deg,transparent 52px,var(--margin) 52px,var(--margin) 54px,transparent 54px),
-      linear-gradient(var(--grid) 1px,transparent 1px),
-      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
-    background-size:100% 100%,26px 26px,26px 26px;
-  }
-}
-.app{box-sizing:border-box;max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:18px 32px;min-height:100%}
-@media (min-width:760px){.app{padding-inline:80px 32px}}
+html.in-lesson body{background:color-mix(in srgb,var(--a) 15%,#FFF8F0)}
+body::before,body::after{content:"";position:fixed;z-index:-1;border-radius:50%;pointer-events:none;transition:opacity .4s ease}
+body::before{width:440px;height:440px;right:-140px;top:-170px;background:#FFD9C4;opacity:.6}
+body::after{width:320px;height:320px;left:-130px;bottom:-130px;background:#CFEDE8;opacity:.6}
+html.in-lesson body::before,html.in-lesson body::after{opacity:0}
+.app{position:relative;box-sizing:border-box;max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:20px 32px;min-height:100%}
+@media (min-width:760px){.app{padding-inline:40px}}
 
 button{font:inherit;color:inherit}
-:focus-visible{outline:4px solid var(--gold);outline-offset:3px;border-radius:12px}
+:focus-visible{outline:4px solid var(--sun);outline-offset:3px;border-radius:14px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-/* ---------- Botones de juguete ---------- */
+/* ---------- Botones de juguete (sin borde, sombra de color debajo) ---------- */
 .btn{
-  font-family:var(--font-display);font-weight:800;font-size:22px;
+  font-family:var(--font-display);font-weight:700;font-size:24px;
   display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  min-height:64px;padding:10px 20px;
+  min-height:72px;padding:10px 22px;
   background:var(--card);color:var(--ink);
-  border:3px solid var(--ink);border-radius:20px;
-  box-shadow:0 6px 0 var(--ink);
-  cursor:pointer;transition:transform .08s ease,box-shadow .08s ease;
-  touch-action:manipulation;
+  border:0;border-radius:26px;box-shadow:0 7px 0 var(--edge);
+  cursor:pointer;transition:transform .08s ease,box-shadow .08s ease;touch-action:manipulation;
 }
-.btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 var(--ink)}
-.btn:disabled{opacity:.35;cursor:default}
-.btn.primary{background:var(--a);color:#fff}
-.btn svg{width:28px;height:28px;flex:none}
+.btn:active:not(:disabled){transform:translateY(5px);box-shadow:0 2px 0 var(--edge)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.primary{background:var(--acc);color:#fff;box-shadow:0 7px 0 var(--acc-d)}
+.btn.primary:active:not(:disabled){box-shadow:0 2px 0 var(--acc-d)}
+.btn svg{width:32px;height:32px;flex:none}
 .chip{
-  font-family:var(--font-body);font-weight:800;font-size:16px;
+  font-family:var(--font-display);font-weight:600;font-size:18px;
   display:inline-flex;align-items:center;gap:8px;
-  padding:8px 14px;min-height:44px;box-sizing:border-box;
-  background:var(--card);border:2.5px solid var(--ink);border-radius:999px;cursor:pointer;
+  padding:8px 16px;min-height:52px;box-sizing:border-box;
+  background:var(--card);border:0;border-radius:20px;box-shadow:0 5px 0 var(--edge);cursor:pointer;touch-action:manipulation;
 }
-.chip svg{width:20px;height:20px}
+.chip:active{transform:translateY(3px);box-shadow:0 2px 0 var(--edge)}
+.chip svg{width:24px;height:24px}
+
+/* Mascota y bocadillo */
+.mascot{width:64px;height:64px;flex:none}
+.bubble{position:relative;background:var(--card);border-radius:24px;padding:12px 20px;box-shadow:0 6px 0 rgba(0,0,0,.06)}
+.bubble::before{content:"";position:absolute;left:-10px;top:20px;border:10px solid transparent;border-right-color:var(--card);border-left:0}
 
 /* ---------- Inicio ---------- */
-.home-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 24px;margin-block:8px 28px}
-.brand h1{
-  font-family:var(--font-display);font-weight:800;
-  font-size:clamp(44px,8vw,84px);line-height:.95;margin:0;letter-spacing:-.01em;
-  text-wrap:balance;
-}
-.brand .squiggle{display:block;width:min(340px,80%);height:22px;margin-top:6px}
-.hello{font-size:clamp(20px,2.6vw,26px);margin:14px 0 0;max-width:34ch;line-height:1.35}
-.hello b{font-family:var(--font-display);font-weight:800;color:var(--a)}
-.side{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
-.stickers{display:inline-flex;align-items:center;gap:10px;font-weight:800;font-size:18px;
-  background:var(--card);border:3px solid var(--ink);border-radius:18px;padding:10px 16px;box-shadow:0 5px 0 var(--ink)}
-.stickers .row{display:flex;gap:4px}
-.stickers .row svg{width:26px;height:26px}
+.home-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:18px 24px;margin-block:6px 26px}
+.brand h1{font-family:var(--font-display);font-weight:700;font-size:clamp(48px,8vw,76px);line-height:.9;margin:0;letter-spacing:-.01em}
+.brand .b1{color:var(--acc)}.brand .b2{color:var(--sun)}.brand .b3{color:var(--teal)}
+.hi{display:flex;align-items:center;gap:14px;margin-top:18px}
+.hello{font-size:clamp(19px,2.4vw,23px);margin:0;max-width:38ch;line-height:1.3}
+.hello b{font-family:var(--font-display);font-weight:700;color:var(--acc)}
+.side{display:flex;flex-direction:column;align-items:flex-end;gap:14px}
+@media (max-width:759px){.side{align-items:flex-start}}
+.stickers{display:inline-flex;align-items:center;gap:8px;background:var(--card);border-radius:24px;padding:10px 14px;box-shadow:0 6px 0 var(--edge)}
+.stickers .row{display:flex;gap:6px;flex-wrap:wrap}
+.stickers .s{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#F4ECE4}
+.stickers .s.got{background:var(--sc);box-shadow:inset 0 -4px 0 rgba(0,0,0,.13)}
+.stickers .s svg{width:26px;height:26px}
+.stickers .cnt{font-family:var(--font-display);font-weight:600;font-size:18px;margin-left:4px;white-space:nowrap}
 .voices{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.vlabel{font-weight:800;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-right:2px}
-.vchip{font-family:var(--font-display);font-size:18px}
-.vchip[aria-checked="true"]{background:var(--ink);color:#fff}
+.vchip{padding-left:7px}
+.vchip i{width:30px;height:30px;border-radius:50%;display:block;flex:none}
+.vchip[aria-checked="true"]{background:var(--ink);color:#fff;box-shadow:0 5px 0 #000}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:18px}
+.levels{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+.lvl{font-family:var(--font-display);font-weight:700;font-size:24px;border:0;background:var(--card);padding:10px 28px;min-height:56px;border-radius:22px;
+  box-shadow:0 6px 0 var(--edge);cursor:pointer;display:inline-flex;align-items:center;gap:8px;touch-action:manipulation}
+.lvl svg{width:24px;height:24px}
+.lvl[aria-checked="true"]{background:var(--acc);color:#fff;box-shadow:0 6px 0 var(--acc-d)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:22px}
 .card{
-  position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;
-  padding:12px 10px 14px;background:var(--card);
-  border:3px solid var(--ink);border-radius:24px;box-shadow:0 7px 0 var(--ink);
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:16px 16px 18px;border:0;border-radius:34px;
+  background:color-mix(in srgb,var(--a) 17%,#fff);
+  box-shadow:0 8px 0 color-mix(in srgb,var(--a) 42%,#fff);
   cursor:pointer;transition:transform .12s ease,box-shadow .12s ease;touch-action:manipulation;
 }
-.card:nth-child(odd){transform:rotate(-1deg)}
-.card:nth-child(even){transform:rotate(1deg)}
-.card:active{transform:translateY(5px);box-shadow:0 2px 0 var(--ink)}
-.card svg.thumb{width:100%;max-width:170px;aspect-ratio:1;height:auto}
-.card .nm{font-family:var(--font-display);font-weight:800;font-size:clamp(20px,2.4vw,26px);color:var(--a)}
-.card .steps-n{font-size:14px;color:var(--ink-soft)}
-.card .badge{position:absolute;top:-12px;right:-10px;width:44px;height:44px;filter:drop-shadow(0 3px 0 var(--ink))}
-.tip{margin-top:30px;color:var(--ink-soft);font-size:16px;max-width:60ch;line-height:1.45}
+.card:active{transform:translateY(6px);box-shadow:0 2px 0 color-mix(in srgb,var(--a) 42%,#fff)}
+.card .plate{display:block;width:100%;max-width:190px;aspect-ratio:1;box-sizing:border-box;background:#fff;border-radius:50%;padding:11%;box-shadow:inset 0 -6px 0 rgba(0,0,0,.05)}
+.card svg.thumb{display:block;width:100%;height:100%}
+.card .nm{font-family:var(--font-display);font-weight:700;font-size:clamp(22px,2.6vw,28px);color:var(--ink);margin-top:10px}
+.card .steps-n{font-size:15px;color:rgba(43,42,53,.6)}
+.card .badge{position:absolute;top:-10px;right:-6px;width:52px;height:52px;border-radius:50%;background:var(--sc);display:grid;place-items:center;box-shadow:0 4px 0 rgba(0,0,0,.15);transform:rotate(12deg)}
+.card .badge svg{width:30px;height:30px}
+.tip{margin-top:34px;color:var(--ink-soft);font-size:16px;max-width:60ch;line-height:1.45}
 
 /* ---------- Lección ---------- */
-.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-.bar .ttl{font-family:var(--font-display);font-weight:800;font-size:clamp(28px,4vw,40px);color:var(--a);margin:0;flex:1;min-width:0;text-align:center}
-.lesson{display:grid;grid-template-columns:1fr;gap:22px;align-items:start}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.bar .chip{min-height:60px;border-radius:22px;box-shadow:0 6px 0 rgba(0,0,0,.08);padding-inline:16px}
+.bar .ttl{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,4vw,40px);color:var(--ink);margin:0;flex:1;min-width:0;text-align:center}
+#voiceToggle[aria-pressed="true"]{color:var(--acc)}
+.lesson{display:grid;grid-template-columns:1fr;gap:24px;align-items:start}
 @media (min-width:760px) and (min-aspect-ratio:1/1){
-  .lesson{grid-template-columns:minmax(0,min(66vh,56%)) minmax(0,1fr);align-items:center;gap:36px}
+  .lesson{grid-template-columns:minmax(0,min(66vh,56%)) minmax(0,1fr);align-items:stretch;gap:36px}
 }
 .board{
   box-sizing:border-box;width:100%;max-width:min(100%,62vh);aspect-ratio:1;margin-inline:auto;
-  background:var(--card);border:3px solid var(--ink);border-radius:30px;box-shadow:0 8px 0 var(--ink);
-  padding:4%;
+  background-color:var(--card);border-radius:44px;box-shadow:0 10px 0 rgba(0,0,0,.07);padding:5%;
+  background-image:radial-gradient(#EDE6DE 1.6px,transparent 1.7px);background-size:26px 26px;background-position:13px 13px;
 }
 .board svg{width:100%;height:100%;display:block;overflow:visible}
 .board svg *{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .board .prev *{stroke:var(--prev);stroke-width:6}
 .board .now *{stroke:var(--a);stroke-width:9}
-.board .ink *{stroke:var(--ink);stroke-width:7}
+.board .ink *{stroke:var(--pen);stroke-width:7}
 .board .fills *{stroke:none;transition:opacity .9s ease}
 .board .prev .fillonly,.board .now .fillonly,.board .ink .fillonly,.board .ink .erase{display:none}
 .board svg.reto .prev *{stroke-width:3.4}
@@ -139,41 +148,42 @@ button{font:inherit;color:inherit}
 .thumb .lines .mid{stroke-width:3}
 .thumb .lines .fine{stroke-width:1.6}
 .thumb .lines .hatch{stroke-opacity:.5}
-.levels{display:inline-flex;border:3px solid var(--ink);border-radius:999px;background:var(--card);box-shadow:0 5px 0 var(--ink);margin-bottom:22px;overflow:hidden}
-.lvl{font-family:var(--font-display);font-weight:800;font-size:20px;border:0;background:transparent;padding:10px 22px;min-height:48px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
-.lvl svg{width:22px;height:22px}
-.lvl[aria-checked="true"]{background:var(--ink);color:#fff}
-#lesson.reto .say{font-size:clamp(22px,2.7vw,32px);max-width:26ch}
 
-.panel{display:flex;flex-direction:column;gap:18px;min-width:0}
-.step-label{font-weight:800;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--a);margin:0}
-.dots{display:flex;gap:8px;flex-wrap:wrap}
-.dots span{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--ink);background:var(--card);box-sizing:border-box}
-.dots span.on{background:var(--a)}
-.dots span.past{background:var(--prev)}
-.say{
-  font-family:var(--font-display);font-weight:800;
-  font-size:clamp(26px,3.6vw,40px);line-height:1.18;margin:0;text-wrap:balance;max-width:20ch;
-}
+.panel{display:flex;flex-direction:column;gap:20px;min-width:0}
+/* Caminito de pasos */
+.dots{display:flex;align-items:center;flex-wrap:nowrap;max-width:560px}
+.dots i{width:30px;height:30px;border-radius:50%;background:var(--card);display:grid;place-items:center;flex:none;
+  font:600 14px/1 var(--font-display);font-style:normal;color:#B9AFA6;transition:all .25s ease}
+.dots i.past{background:var(--teal);color:#fff}
+.dots i.on{width:44px;height:44px;background:var(--acc);color:#fff;font-size:20px;box-shadow:0 4px 0 var(--acc-d)}
+.dots b{flex:1 1 4px;min-width:3px;height:5px;background:var(--card)}
+.dots b.past{background:var(--teal)}
+.talk{display:flex;gap:14px;align-items:flex-start}
+.say{font-family:var(--font-display);font-weight:600;font-size:clamp(25px,3.3vw,34px);line-height:1.2;margin:0;text-wrap:balance}
+.talk .say{flex:1;min-width:0;padding:20px 24px;border-radius:30px}
+.talk .bubble::before{top:24px}
+#lesson.reto .say{font-size:clamp(22px,2.7vw,30px)}
 .hint{margin:0;color:var(--ink-soft);font-size:17px;line-height:1.4;max-width:40ch}
-.controls{display:grid;grid-template-columns:auto auto 1fr;gap:12px;margin-top:6px}
-@media (max-width:520px){ .controls .sec .lbl{display:none} .controls .sec{padding-inline:14px} }
-@media (min-width:760px) and (min-aspect-ratio:1/1){
-  .controls{grid-template-columns:1fr 1fr}
-  .controls .primary{grid-column:1/-1;min-height:76px;font-size:26px}
-}
+.talk + .hint{margin-left:78px}
+.controls{display:grid;grid-template-columns:auto auto 1fr;gap:14px;margin-top:auto;padding-top:6px}
+.controls .sec{width:84px;min-height:84px;padding:0;background:var(--card);box-shadow:0 7px 0 rgba(0,0,0,.08)}
+.controls .sec:active:not(:disabled){box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.controls .sec .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.controls .primary{min-height:84px;font-size:30px;border-radius:28px}
 .controls .btn{min-width:0}
+@media (max-width:520px){ .controls .sec{width:68px;min-height:72px} .controls .primary{min-height:72px;font-size:24px} .talk + .hint{margin-left:0} }
 
 .sticker{
   width:150px;height:150px;border-radius:50%;
-  background:var(--gold);border:4px solid var(--ink);box-shadow:0 8px 0 var(--ink);
+  background:var(--gold);box-shadow:inset 0 -10px 0 rgba(0,0,0,.12),0 8px 0 rgba(0,0,0,.08);
   display:grid;place-items:center;
 }
 .sticker svg{width:92px;height:92px}
 .pop{animation:pop .7s cubic-bezier(.2,1.6,.4,1) both, wiggle 1.4s ease-in-out .7s 2}
 @keyframes pop{from{transform:scale(.2) rotate(-30deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
-.done-actions{display:flex;flex-wrap:wrap;gap:12px}
+#donePanel .say{font-weight:700;font-size:clamp(28px,3.8vw,40px)}
+.done-actions{display:flex;flex-wrap:wrap;gap:14px}
 
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -186,17 +196,16 @@ button{font:inherit;color:inherit}
   <section id="home">
     <header class="home-head">
       <div class="brand">
-        <h1>Ari Draw</h1>
-        <svg class="squiggle" viewBox="0 0 340 22" aria-hidden="true"><path d="M4 14 C 40 2, 70 22, 110 11 S 180 3, 220 13 S 300 20, 336 8" fill="none" stroke="var(--a)" stroke-width="6" stroke-linecap="round"/></svg>
-        <p class="hello" id="hello">¡Hola, <b>Ari</b>! ¿Qué animal dibujamos hoy?</p>
+        <h1><span class="b1">Ari</span> <span class="b2">Dr</span><span class="b3">aw</span></h1>
+        <div class="hi"><svg class="mascot" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="34" r="28" fill="#FFB830"/><circle cx="23" cy="30" r="4" fill="#2B2A35"/><circle cx="41" cy="30" r="4" fill="#2B2A35"/><circle cx="17" cy="40" r="5" fill="#FF8C6B" opacity=".6"/><circle cx="47" cy="40" r="5" fill="#FF8C6B" opacity=".6"/><path d="M24 42 Q32 50 40 42" fill="none" stroke="#2B2A35" stroke-width="3.4" stroke-linecap="round"/><path d="M28 2 L36 2 L40 14 L24 14 Z" fill="#FF6B4A"/></svg><p class="hello bubble" id="hello">¡Hola, <b>Ari</b>! ¿Qué animal dibujamos hoy?</p></div>
       </div>
       <div class="side">
         <div class="stickers" id="stickers" aria-live="polite"></div>
         <div class="voices" role="radiogroup" aria-label="Elige la voz">
-          <span class="vlabel">Voz</span>
-          <button class="chip vchip" type="button" role="radio" data-v="lucia">Lucía</button>
-          <button class="chip vchip" type="button" role="radio" data-v="pablo">Pablo</button>
-          <button class="chip vchip" type="button" role="radio" data-v="dora">Dora</button>
+          <span class="sr">Voz</span>
+          <button class="chip vchip" type="button" role="radio" data-v="lucia"><i style="background:#FF8C6B"></i>Lucía</button>
+          <button class="chip vchip" type="button" role="radio" data-v="pablo"><i style="background:#6BB7F0"></i>Pablo</button>
+          <button class="chip vchip" type="button" role="radio" data-v="dora"><i style="background:#B98CF0"></i>Dora</button>
         </div>
       </div>
     </header>
@@ -243,9 +252,9 @@ button{font:inherit;color:inherit}
       </div>
 
       <div class="panel" id="stepPanel">
-        <p class="step-label" id="stepLabel">Paso 1 de 5</p>
+        <p class="step-label sr" id="stepLabel">Paso 1 de 5</p>
         <div class="dots" id="dots" aria-hidden="true"></div>
-        <p class="say" id="say"></p>
+        <div class="talk"><svg class="mascot" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="34" r="28" fill="#FFB830"/><circle cx="23" cy="30" r="4" fill="#2B2A35"/><circle cx="41" cy="30" r="4" fill="#2B2A35"/><circle cx="17" cy="40" r="5" fill="#FF8C6B" opacity=".6"/><circle cx="47" cy="40" r="5" fill="#FF8C6B" opacity=".6"/><path d="M24 42 Q32 50 40 42" fill="none" stroke="#2B2A35" stroke-width="3.4" stroke-linecap="round"/><path d="M28 2 L36 2 L40 14 L24 14 Z" fill="#FF6B4A"/></svg><p class="say bubble" id="say" aria-live="polite"></p></div>
         <p class="hint">La línea de color es la nueva. Lo gris ya lo tienes dibujado.</p>
         <div class="controls">
           <button class="btn sec" id="prevBtn" type="button" aria-label="Paso anterior">
@@ -265,7 +274,7 @@ button{font:inherit;color:inherit}
 
       <div class="panel" id="donePanel" hidden>
         <div class="sticker pop" id="sticker">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z" fill="#fff" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z" fill="#fff" stroke="#2B2A35" stroke-width="1.2" stroke-linejoin="round"/></svg>
         </div>
         <p class="say" id="doneSay">¡Muy bien!</p>
         <p class="hint" id="doneHint">Ahora puedes colorear tu dibujo con los colores que quieras.</p>
@@ -362,7 +371,7 @@ let voiceId = store.get("voz", "lucia");
 let level = store.get("nivel", "facil");
 if(level !== "reto") level = "facil";
 const list = () => level === "reto" ? RETO : LESSONS;
-const STAR_COLOR = { facil: "#F2B632", reto: "#EF7DB0" };
+const STAR_COLOR = { facil: "#FFC93C", reto: "#FF8FC0" };
 if(VOICES.indexOf(voiceId) < 0) voiceId = "lucia";
 
 /* ---------- Voz: audios grabados con voz natural; la del sistema solo como reserva ---------- */
@@ -413,8 +422,7 @@ function releaseAwake(){ try{ if(wake) wake.release(); }catch(e){} wake = null; 
 /* ---------- Utilidades ---------- */
 const $ = id => document.getElementById(id);
 const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-const STAR = '<path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z" stroke="#2F3A56" stroke-width="1.6" stroke-linejoin="round"/>';
-function starSvg(on, c){ return '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="' + (on ? (c || "#F2B632") : "#FFFFFF") + '">' + STAR + '</g></svg>'; }
+function dot(on){ return '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="' + (on ? "#FFFFFF" : "#E3D8CE") + '"' + (on ? ' stroke="#2B2A35" stroke-width="1.2" stroke-linejoin="round"' : "") + '><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z"/></g></svg>'; }
 function fillsFrom(markup){
   const tmp = document.createElementNS("http://www.w3.org/2000/svg","g");
   tmp.innerHTML = markup;
@@ -446,7 +454,9 @@ document.querySelectorAll(".lvl").forEach(b => b.addEventListener("click", () =>
 function renderHome(){
   const ls = list(), sc = STAR_COLOR[level];
   const got = ls.filter(l => done[l.id]).length;
-  $("stickers").innerHTML = '<div class="row">' + ls.map(l => starSvg(!!done[l.id], sc)).join("") + "</div><span>" + got + " de " + ls.length + (level === "reto" ? " de artista" : " pegatinas") + "</span>";
+  $("stickers").style.setProperty("--sc", sc);
+  $("stickers").innerHTML = '<div class="row">' + ls.map(l => '<span class="s' + (done[l.id] ? " got" : "") + '">' + dot(!!done[l.id]) + "</span>").join("") +
+    '</div><span class="cnt">' + got + " de " + ls.length + (level === "reto" ? " de artista" : "") + "</span>";
   const grid = $("grid");
   grid.innerHTML = "";
   ls.forEach((l, i) => {
@@ -455,11 +465,11 @@ function renderHome(){
     b.type = "button"; b.className = "card"; b.style.setProperty("--a", l.color);
     b.setAttribute("aria-label", "Dibujar " + l.what + (done[l.id] ? ", ya tienes su pegatina" : ""));
     b.innerHTML =
-      (done[l.id] ? '<span class="badge">' + starSvg(true, sc) + "</span>" : "") +
-      '<svg class="thumb" viewBox="-10 -10 420 420" aria-hidden="true">' +
+      (done[l.id] ? '<span class="badge" style="--sc:' + sc + '">' + dot(true) + "</span>" : "") +
+      '<span class="plate"><svg class="thumb" viewBox="-10 -10 420 420" aria-hidden="true">' +
         "<g>" + fillsFrom(all) + "</g>" +
         '<g class="lines" fill="none" stroke="#2F3A56" stroke-width="' + (l.reto ? 4.2 : 9) + '" stroke-linecap="round" stroke-linejoin="round" style="fill:none">' + all.replace(/data-fill="[^"]*"/g, "") + "</g>" +
-      "</svg>" +
+      "</svg></span>" +
       '<span class="nm">' + l.card + "</span>" +
       '<span class="steps-n">' + l.steps.length + " pasos</span>";
     b.addEventListener("click", () => openLesson(i));
@@ -487,6 +497,7 @@ function openLesson(i){
   $("lesson").classList.toggle("reto", !!L.reto);
   $("lesson").style.setProperty("--a", L.color);
   document.documentElement.style.setProperty("--a", L.color);
+  document.documentElement.classList.add("in-lesson");
   $("lessonTitle").textContent = L.title;
   $("home").hidden = true; $("lesson").hidden = false;
   window.scrollTo(0, 0);
@@ -498,6 +509,7 @@ function openLesson(i){
 function goHome(){
   hush(); releaseAwake();
   document.documentElement.style.setProperty("--a", "#D9622B");
+  document.documentElement.classList.remove("in-lesson");
   $("lesson").hidden = true; $("home").hidden = false;
   renderHome();
   window.scrollTo(0, 0);
@@ -537,7 +549,8 @@ function showStep(first){
   animate(gNow);
 
   $("stepLabel").textContent = "Paso " + (step + 1) + " de " + n;
-  $("dots").innerHTML = L.steps.map((_, i) => '<span class="' + (i === step ? "on" : i < step ? "past" : "") + '"></span>').join("");
+  $("dots").innerHTML = L.steps.map((_, i) => (i ? '<b class="' + (i <= step ? "past" : "") + '"></b>' : "") +
+    '<i class="' + (i === step ? "on" : i < step ? "past" : "") + '">' + (i + 1) + "</i>").join("");
   $("say").textContent = s.say;
   $("prevBtn").disabled = step === 0;
   $("nextLbl").textContent = step === n - 1 ? "¡Terminé!" : "Siguiente";
