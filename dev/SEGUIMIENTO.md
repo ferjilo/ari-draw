@@ -26,6 +26,9 @@ Marca `[x]` al terminar y añade una línea al registro.
 - [ ] **P6 · Cuadrícula de ayuda en Reto.** Opción de ver una cuadrícula suave en el lienzo, igual que la del papel, para copiar proporciones.
 - [ ] **P7 · Rincón de papás.** Acceso protegido con una suma sencilla: qué ha dibujado y cuándo, y reiniciar pegatinas.
 - [ ] **P8 · Nivel 3 "Experto".** Dibujos con escena completa (fondo, dos animales, perspectiva sencilla). Solo cuando domine Reto.
+- [ ] **P9 · Estilo más moderno (tipo Simply Draw).** Rediseño visual de inicio y lección, sin cambiar el funcionamiento.
+  - [x] P9a · Tres mockups con los dibujos reales: https://ferjilo.github.io/ari-draw/dev/mockups/ — A · Estudio (claro, violeta), B · Pastel Pop (color por animal, mascota), C · Noche estrellada (oscuro, amarillo). Se regeneran con `dev/mockups/gen.py`.
+  - [ ] P9b · Fernando elige estilo (o mezcla) → aplicarlo en `src/app.html` (CSS y marcado de inicio, lección y pantalla final; fuentes; `theme-color` e icono en `dev/build.py` si cambia el color). Comprobar con `dev/test.py`.
 
 ## Ideas sueltas (sin priorizar)
 - Animales de casa o de sitios que visitáis, como lecciones especiales.
@@ -36,3 +39,4 @@ Marca `[x]` al terminar y añade una línea al registro.
 - 2026-10-03 · v1.1 Voces naturales grabadas: Lucía, Pablo y Dora.
 - 2026-10-03 · v1.2 Nivel Reto con 5 dibujos tipo ilustrador.
 - 2026-10-03 · v1.3 Código fuente, herramientas y este seguimiento en el repo.
+- 2026-10-03 · P9a Tres mockups de estilo en `dev/mockups/` (la app no cambia). Pendiente elegir.
