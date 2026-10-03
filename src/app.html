@@ -1,0 +1,604 @@
+<title>Ari Draw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@600;800&family=Nunito:wght@600;800&display=swap">
+<style>
+/* Layout: hoja de cuaderno cuadriculado del cole; app de una pantalla: lienzo cuadrado + instrucción grande + botones gordos de juguete */
+:root{
+  --paper:#FFFDF7;
+  --grid:#DCE7F4;
+  --margin:#F3B0AA;
+  --ink:#2F3A56;
+  --ink-soft:#6B7591;
+  --prev:#B4BCCE;
+  --card:#FFFFFF;
+  --gold:#F2B632;
+  --a:#D9622B;
+  --font-display:"Grandstander","Chalkboard SE","Comic Sans MS",system-ui,sans-serif;
+  --font-body:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:26px 26px;
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-weight:600;
+  font-size:18px;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none;
+}
+@media (min-width:760px){
+  body{
+    background-image:
+      linear-gradient(90deg,transparent 52px,var(--margin) 52px,var(--margin) 54px,transparent 54px),
+      linear-gradient(var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:100% 100%,26px 26px,26px 26px;
+  }
+}
+.app{box-sizing:border-box;max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:18px 32px;min-height:100%}
+@media (min-width:760px){.app{padding-inline:80px 32px}}
+
+button{font:inherit;color:inherit}
+:focus-visible{outline:4px solid var(--gold);outline-offset:3px;border-radius:12px}
+
+/* ---------- Botones de juguete ---------- */
+.btn{
+  font-family:var(--font-display);font-weight:800;font-size:22px;
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:64px;padding:10px 20px;
+  background:var(--card);color:var(--ink);
+  border:3px solid var(--ink);border-radius:20px;
+  box-shadow:0 6px 0 var(--ink);
+  cursor:pointer;transition:transform .08s ease,box-shadow .08s ease;
+  touch-action:manipulation;
+}
+.btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 var(--ink)}
+.btn:disabled{opacity:.35;cursor:default}
+.btn.primary{background:var(--a);color:#fff}
+.btn svg{width:28px;height:28px;flex:none}
+.chip{
+  font-family:var(--font-body);font-weight:800;font-size:16px;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 14px;min-height:44px;box-sizing:border-box;
+  background:var(--card);border:2.5px solid var(--ink);border-radius:999px;cursor:pointer;
+}
+.chip svg{width:20px;height:20px}
+
+/* ---------- Inicio ---------- */
+.home-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 24px;margin-block:8px 28px}
+.brand h1{
+  font-family:var(--font-display);font-weight:800;
+  font-size:clamp(44px,8vw,84px);line-height:.95;margin:0;letter-spacing:-.01em;
+  text-wrap:balance;
+}
+.brand .squiggle{display:block;width:min(340px,80%);height:22px;margin-top:6px}
+.hello{font-size:clamp(20px,2.6vw,26px);margin:14px 0 0;max-width:34ch;line-height:1.35}
+.hello b{font-family:var(--font-display);font-weight:800;color:var(--a)}
+.side{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.stickers{display:inline-flex;align-items:center;gap:10px;font-weight:800;font-size:18px;
+  background:var(--card);border:3px solid var(--ink);border-radius:18px;padding:10px 16px;box-shadow:0 5px 0 var(--ink)}
+.stickers .row{display:flex;gap:4px}
+.stickers .row svg{width:26px;height:26px}
+.voices{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.vlabel{font-weight:800;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-right:2px}
+.vchip{font-family:var(--font-display);font-size:18px}
+.vchip[aria-checked="true"]{background:var(--ink);color:#fff}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:18px}
+.card{
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:12px 10px 14px;background:var(--card);
+  border:3px solid var(--ink);border-radius:24px;box-shadow:0 7px 0 var(--ink);
+  cursor:pointer;transition:transform .12s ease,box-shadow .12s ease;touch-action:manipulation;
+}
+.card:nth-child(odd){transform:rotate(-1deg)}
+.card:nth-child(even){transform:rotate(1deg)}
+.card:active{transform:translateY(5px);box-shadow:0 2px 0 var(--ink)}
+.card svg.thumb{width:100%;max-width:170px;aspect-ratio:1;height:auto}
+.card .nm{font-family:var(--font-display);font-weight:800;font-size:clamp(20px,2.4vw,26px);color:var(--a)}
+.card .steps-n{font-size:14px;color:var(--ink-soft)}
+.card .badge{position:absolute;top:-12px;right:-10px;width:44px;height:44px;filter:drop-shadow(0 3px 0 var(--ink))}
+.tip{margin-top:30px;color:var(--ink-soft);font-size:16px;max-width:60ch;line-height:1.45}
+
+/* ---------- Lección ---------- */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.bar .ttl{font-family:var(--font-display);font-weight:800;font-size:clamp(28px,4vw,40px);color:var(--a);margin:0;flex:1;min-width:0;text-align:center}
+.lesson{display:grid;grid-template-columns:1fr;gap:22px;align-items:start}
+@media (min-width:760px) and (min-aspect-ratio:1/1){
+  .lesson{grid-template-columns:minmax(0,min(66vh,56%)) minmax(0,1fr);align-items:center;gap:36px}
+}
+.board{
+  box-sizing:border-box;width:100%;max-width:min(100%,62vh);aspect-ratio:1;margin-inline:auto;
+  background:var(--card);border:3px solid var(--ink);border-radius:30px;box-shadow:0 8px 0 var(--ink);
+  padding:4%;
+}
+.board svg{width:100%;height:100%;display:block;overflow:visible}
+.board svg *{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.board .prev *{stroke:var(--prev);stroke-width:6}
+.board .now *{stroke:var(--a);stroke-width:9}
+.board .ink *{stroke:var(--ink);stroke-width:7}
+.board .fills *{stroke:none;transition:opacity .9s ease}
+.board .prev .fillonly,.board .now .fillonly,.board .ink .fillonly,.board .ink .erase{display:none}
+.board svg.reto .prev *{stroke-width:3.4}
+.board svg.reto .prev .mid{stroke-width:2.4}
+.board svg.reto .prev .fine{stroke-width:1.4}
+.board svg.reto .now *{stroke-width:5.2}
+.board svg.reto .now .mid{stroke-width:3.8}
+.board svg.reto .now .fine{stroke-width:2.4}
+.board svg.reto .ink *{stroke-width:3.6}
+.board svg.reto .ink .mid{stroke-width:2.6}
+.board svg.reto .ink .fine{stroke-width:1.5}
+.board svg.reto .ink .hatch{stroke-opacity:.55}
+.thumb .lines .fillonly,.thumb .lines .erase{display:none}
+.thumb .lines .mid{stroke-width:3}
+.thumb .lines .fine{stroke-width:1.6}
+.thumb .lines .hatch{stroke-opacity:.5}
+.levels{display:inline-flex;border:3px solid var(--ink);border-radius:999px;background:var(--card);box-shadow:0 5px 0 var(--ink);margin-bottom:22px;overflow:hidden}
+.lvl{font-family:var(--font-display);font-weight:800;font-size:20px;border:0;background:transparent;padding:10px 22px;min-height:48px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.lvl svg{width:22px;height:22px}
+.lvl[aria-checked="true"]{background:var(--ink);color:#fff}
+#lesson.reto .say{font-size:clamp(22px,2.7vw,32px);max-width:26ch}
+
+.panel{display:flex;flex-direction:column;gap:18px;min-width:0}
+.step-label{font-weight:800;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--a);margin:0}
+.dots{display:flex;gap:8px;flex-wrap:wrap}
+.dots span{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--ink);background:var(--card);box-sizing:border-box}
+.dots span.on{background:var(--a)}
+.dots span.past{background:var(--prev)}
+.say{
+  font-family:var(--font-display);font-weight:800;
+  font-size:clamp(26px,3.6vw,40px);line-height:1.18;margin:0;text-wrap:balance;max-width:20ch;
+}
+.hint{margin:0;color:var(--ink-soft);font-size:17px;line-height:1.4;max-width:40ch}
+.controls{display:grid;grid-template-columns:auto auto 1fr;gap:12px;margin-top:6px}
+@media (max-width:520px){ .controls .sec .lbl{display:none} .controls .sec{padding-inline:14px} }
+@media (min-width:760px) and (min-aspect-ratio:1/1){
+  .controls{grid-template-columns:1fr 1fr}
+  .controls .primary{grid-column:1/-1;min-height:76px;font-size:26px}
+}
+.controls .btn{min-width:0}
+
+.sticker{
+  width:150px;height:150px;border-radius:50%;
+  background:var(--gold);border:4px solid var(--ink);box-shadow:0 8px 0 var(--ink);
+  display:grid;place-items:center;
+}
+.sticker svg{width:92px;height:92px}
+.pop{animation:pop .7s cubic-bezier(.2,1.6,.4,1) both, wiggle 1.4s ease-in-out .7s 2}
+@keyframes pop{from{transform:scale(.2) rotate(-30deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.done-actions{display:flex;flex-wrap:wrap;gap:12px}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+
+<div class="app">
+
+  <!-- INICIO -->
+  <section id="home">
+    <header class="home-head">
+      <div class="brand">
+        <h1>Ari Draw</h1>
+        <svg class="squiggle" viewBox="0 0 340 22" aria-hidden="true"><path d="M4 14 C 40 2, 70 22, 110 11 S 180 3, 220 13 S 300 20, 336 8" fill="none" stroke="var(--a)" stroke-width="6" stroke-linecap="round"/></svg>
+        <p class="hello" id="hello">¡Hola, <b>Ari</b>! ¿Qué animal dibujamos hoy?</p>
+      </div>
+      <div class="side">
+        <div class="stickers" id="stickers" aria-live="polite"></div>
+        <div class="voices" role="radiogroup" aria-label="Elige la voz">
+          <span class="vlabel">Voz</span>
+          <button class="chip vchip" type="button" role="radio" data-v="lucia">Lucía</button>
+          <button class="chip vchip" type="button" role="radio" data-v="pablo">Pablo</button>
+          <button class="chip vchip" type="button" role="radio" data-v="dora">Dora</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="levels" role="radiogroup" aria-label="Nivel">
+      <button class="lvl" type="button" role="radio" data-l="facil">Fácil</button>
+      <button class="lvl" type="button" role="radio" data-l="reto">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z" fill="#EF7DB0" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        Reto
+      </button>
+    </div>
+    <div class="grid" id="grid"></div>
+
+    <p class="tip">Elige un animal. En cada paso aparece una línea de color: mírala, escucha y dibújala tú en tu papel. Al terminar, ganas una pegatina. En el nivel Reto los dibujos tienen pelo, plumas y sombras, como los de un ilustrador.</p>
+  </section>
+
+  <!-- LECCIÓN -->
+  <section id="lesson" hidden>
+    <div class="bar">
+      <button class="chip" id="backHome" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Animales</span>
+      </button>
+      <h2 class="ttl" id="lessonTitle">El gato</h2>
+      <button class="chip" id="voiceToggle" type="button" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path id="waves" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        <span id="voiceLbl">Voz</span>
+      </button>
+    </div>
+
+    <div class="lesson">
+      <div class="board">
+        <svg id="canvas" viewBox="0 0 400 400" role="img" aria-label="Dibujo paso a paso">
+          <defs><filter id="pencil" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+          </filter></defs>
+          <g id="art">
+          <g class="fills" id="gFills"></g>
+          <g class="prev" id="gPrev"></g>
+          <g class="now" id="gNow"></g>
+          </g>
+        </svg>
+      </div>
+
+      <div class="panel" id="stepPanel">
+        <p class="step-label" id="stepLabel">Paso 1 de 5</p>
+        <div class="dots" id="dots" aria-hidden="true"></div>
+        <p class="say" id="say"></p>
+        <p class="hint">La línea de color es la nueva. Lo gris ya lo tienes dibujado.</p>
+        <div class="controls">
+          <button class="btn sec" id="prevBtn" type="button" aria-label="Paso anterior">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="lbl">Atrás</span>
+          </button>
+          <button class="btn sec" id="againBtn" type="button" aria-label="Otra vez">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="lbl">Otra vez</span>
+          </button>
+          <button class="btn primary" id="nextBtn" type="button">
+            <span id="nextLbl">Siguiente</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel" id="donePanel" hidden>
+        <div class="sticker pop" id="sticker">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z" fill="#fff" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        </div>
+        <p class="say" id="doneSay">¡Muy bien!</p>
+        <p class="hint" id="doneHint">Ahora puedes colorear tu dibujo con los colores que quieras.</p>
+        <div class="done-actions">
+          <button class="btn primary" id="otherBtn" type="button">Otro animal</button>
+          <button class="btn" id="redoBtn" type="button">Dibujar otra vez</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- Lecciones ---------- */
+const LESSONS = [
+  { id:"gato", title:"El gato", card:"Gato", what:"un gato", color:"#D9622B", steps:[
+    { say:"Dibuja un círculo muy grande. Es la cabeza.",
+      d:'<circle cx="200" cy="220" r="120" data-fill="#F7B267"/>' },
+    { say:"Ahora las orejas: dos picos arriba, uno a cada lado.",
+      d:'<path d="M105 148 L118 48 L184 103" data-fill="#F7B267"/><path d="M295 148 L282 48 L216 103" data-fill="#F7B267"/>' },
+    { say:"Dos ojos redondos, con una rayita en el medio.",
+      d:'<circle cx="158" cy="198" r="19" data-fill="#9BD67B"/><circle cx="242" cy="198" r="19" data-fill="#9BD67B"/><path d="M158 186 L158 210 M242 186 L242 210"/>' },
+    { say:"Una naricita como un triángulo y, debajo, dos curvitas para la boca.",
+      d:'<path d="M188 238 L212 238 L200 252 Z" data-fill="#F28AA0"/><path d="M200 252 Q200 272 180 270 M200 252 Q200 272 220 270"/>' },
+    { say:"Y los bigotes: tres rayas a cada lado.",
+      d:'<path d="M148 244 L76 232 M148 255 L72 258 M150 266 L80 284 M252 244 L324 232 M252 255 L328 258 M250 266 L320 284"/>' }
+  ]},
+  { id:"pez", title:"El pez", card:"Pez", what:"un pez", color:"#1A86C2", steps:[
+    { say:"Dibuja un óvalo grande y tumbado, como un huevo acostado. Es el cuerpo.",
+      d:'<ellipse cx="180" cy="200" rx="120" ry="80" data-fill="#6CCBEF"/>' },
+    { say:"Detrás pon la cola: un triángulo.",
+      d:'<path d="M300 200 L370 140 L370 260 Z" data-fill="#2E9BD0"/>' },
+    { say:"Dos aletas: una arriba y otra abajo.",
+      d:'<path d="M150 123 Q180 68 230 128" data-fill="#2E9BD0"/><path d="M160 279 Q190 322 215 277" data-fill="#2E9BD0"/>' },
+    { say:"El ojo: un círculo con un puntito dentro. Y una boca sonriente.",
+      d:'<circle cx="112" cy="180" r="17" data-fill="#FFFFFF"/><circle cx="115" cy="182" r="5" data-fill="#2F3A56"/><path d="M70 214 Q85 228 100 214"/>' },
+    { say:"Una raya curva detrás del ojo y unas escamas, como sonrisas pequeñas.",
+      d:'<path d="M145 150 Q128 200 145 250"/><path d="M180 170 Q195 186 210 170 M215 205 Q230 221 245 205 M180 235 Q195 251 210 235 M245 165 Q258 179 271 165"/>' }
+  ]},
+  { id:"tortuga", title:"La tortuga", card:"Tortuga", what:"una tortuga", color:"#2E8B3A", steps:[
+    { say:"Dibuja medio círculo grande con una raya abajo. Es el caparazón.",
+      d:'<path d="M70 240 A130 130 0 0 1 330 240 Z" data-fill="#6DBF4B"/>' },
+    { say:"Dos patitas debajo, como rectángulos con las esquinas redondas.",
+      d:'<rect x="100" y="240" width="42" height="46" rx="15" data-fill="#B5DB8C"/><rect x="250" y="240" width="42" height="46" rx="15" data-fill="#B5DB8C"/>' },
+    { say:"La cabeza: un círculo a la derecha. Y una colita a la izquierda.",
+      d:'<circle cx="360" cy="212" r="34" data-fill="#B5DB8C"/><path d="M70 236 L40 254 L78 252" data-fill="#B5DB8C"/>' },
+    { say:"En la cabeza, un ojo y una sonrisa.",
+      d:'<circle cx="370" cy="202" r="5" data-fill="#2F3A56"/><path d="M350 224 Q364 235 380 222"/>' },
+    { say:"Decora el caparazón: un hexágono en el centro y unas rayas hasta el borde.",
+      d:'<path d="M240 185 L220 150 L180 150 L160 185 L180 220 L220 220 Z" data-fill="#4E9E36"/><path d="M180 150 L162 118 M220 150 L238 118 M160 185 L80 190 M240 185 L320 190 M180 220 L170 240 M220 220 L230 240"/>' }
+  ]},
+  { id:"buho", title:"El búho", card:"Búho", what:"un búho", color:"#8A5A3C", steps:[
+    { say:"Dibuja un óvalo alto, como un huevo de pie. Es el cuerpo.",
+      d:'<ellipse cx="200" cy="215" rx="115" ry="145" data-fill="#C49A73"/>' },
+    { say:"Dos orejitas en pico, arriba del todo.",
+      d:'<path d="M115 120 L120 55 L160 84" data-fill="#C49A73"/><path d="M285 120 L280 55 L240 84" data-fill="#C49A73"/>' },
+    { say:"Dos ojos muy grandes. Dentro de cada uno, un círculo pequeño.",
+      d:'<circle cx="155" cy="165" r="42" data-fill="#FFFFFF"/><circle cx="245" cy="165" r="42" data-fill="#FFFFFF"/><circle cx="160" cy="170" r="14" data-fill="#2F3A56"/><circle cx="240" cy="170" r="14" data-fill="#2F3A56"/>' },
+    { say:"El pico: un triángulo que mira hacia abajo.",
+      d:'<path d="M185 202 L215 202 L200 230 Z" data-fill="#F4B63F"/>' },
+    { say:"La barriga: un óvalo. Dentro, unas plumas con forma de uve.",
+      d:'<ellipse cx="200" cy="295" rx="68" ry="52" data-fill="#EED9B8"/><path d="M170 275 L180 286 L190 275 M210 275 L220 286 L230 275 M190 305 L200 316 L210 305"/>' },
+    { say:"Por último, las alas a los lados y las patitas abajo.",
+      d:'<path d="M98 195 Q58 268 112 322 M302 195 Q342 268 288 322"/><path d="M175 356 L168 374 M185 358 L185 378 M195 356 L202 374 M215 356 L208 374 M225 358 L225 378 M235 356 L242 374"/>' }
+  ]},
+  { id:"raton", title:"El ratón", card:"Ratón", what:"un ratón", color:"#B83C72", steps:[
+    { say:"Dibuja un círculo grande. Es la cabeza.",
+      d:'<circle cx="200" cy="220" r="95" data-fill="#CFCAD8"/>' },
+    { say:"Dos orejas muy grandes y redondas, arriba a cada lado.",
+      d:'<path d="M115 178 A58 58 0 1 1 172 129" data-fill="#CFCAD8"/><path d="M285 178 A58 58 0 1 0 228 129" data-fill="#CFCAD8"/>' },
+    { say:"Dentro de cada oreja, otro círculo más pequeño.",
+      d:'<circle cx="115" cy="120" r="30" data-fill="#F6A8B8"/><circle cx="285" cy="120" r="30" data-fill="#F6A8B8"/>' },
+    { say:"Dos ojitos y una nariz redonda en el centro.",
+      d:'<circle cx="165" cy="205" r="12" data-fill="#2F3A56"/><circle cx="235" cy="205" r="12" data-fill="#2F3A56"/><circle cx="200" cy="250" r="14" data-fill="#F28AA0"/>' },
+    { say:"La boca, los bigotes y dos mejillas redonditas.",
+      d:'<path d="M200 264 Q200 282 184 284 M200 264 Q200 282 216 284"/><path d="M180 252 L110 242 M180 260 L112 270 M220 252 L290 242 M220 260 L288 270"/><circle cx="148" cy="270" r="11" data-fill="#F6A8B8"/><circle cx="252" cy="270" r="11" data-fill="#F6A8B8"/>' }
+  ]}
+];
+const RETO = __RETO__;
+
+/* ---------- Guardado local (solo en este dispositivo) ---------- */
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem("ari." + k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem("ari." + k, JSON.stringify(v)); }catch(e){} }
+};
+const NAME = "Ari";
+const VOICES = ["lucia", "pablo", "dora"];
+let done = store.get("done", {});
+let voiceOn = store.get("voice", true);
+let voiceId = store.get("voz", "lucia");
+let level = store.get("nivel", "facil");
+if(level !== "reto") level = "facil";
+const list = () => level === "reto" ? RETO : LESSONS;
+const STAR_COLOR = { facil: "#F2B632", reto: "#EF7DB0" };
+if(VOICES.indexOf(voiceId) < 0) voiceId = "lucia";
+
+/* ---------- Voz: audios grabados con voz natural; la del sistema solo como reserva ---------- */
+const player = new Audio();
+player.preload = "auto";
+const hasSpeech = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+let sysVoice = null;
+function pickVoice(){
+  if(!hasSpeech) return;
+  const vs = speechSynthesis.getVoices() || [];
+  const norm = v => (v.lang || "").replace("_","-");
+  sysVoice = vs.find(v => norm(v) === "es-ES") || vs.find(v => norm(v).startsWith("es")) || null;
+}
+if(hasSpeech){ pickVoice(); try{ speechSynthesis.addEventListener("voiceschanged", pickVoice); }catch(e){} }
+function speakSystem(text){
+  if(!hasSpeech || !text) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "es-ES"; if(sysVoice) u.voice = sysVoice;
+    u.rate = 0.9;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function hush(){
+  try{ player.pause(); }catch(e){}
+  if(hasSpeech){ try{ speechSynthesis.cancel(); }catch(e){} }
+}
+function play(key, text, force){
+  if(!voiceOn && !force) return;
+  hush();
+  try{
+    player.src = "audio/" + voiceId + "/" + key + ".mp3";
+    player.currentTime = 0;
+    const p = player.play();
+    if(p && p.catch) p.catch(err => { if(!err || err.name !== "AbortError") speakSystem(text); });
+  }catch(e){ speakSystem(text); }
+}
+function preload(keys){
+  keys.forEach(k => { try{ const a = new Audio(); a.preload = "auto"; a.src = "audio/" + voiceId + "/" + k + ".mp3"; }catch(e){} });
+}
+
+/* ---------- Pantalla encendida mientras dibuja ---------- */
+let wake = null;
+async function keepAwake(){ try{ if(navigator.wakeLock) wake = await navigator.wakeLock.request("screen"); }catch(e){ wake = null; } }
+function releaseAwake(){ try{ if(wake) wake.release(); }catch(e){} wake = null; }
+
+/* ---------- Utilidades ---------- */
+const $ = id => document.getElementById(id);
+const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+const STAR = '<path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z" stroke="#2F3A56" stroke-width="1.6" stroke-linejoin="round"/>';
+function starSvg(on, c){ return '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="' + (on ? (c || "#F2B632") : "#FFFFFF") + '">' + STAR + '</g></svg>'; }
+function fillsFrom(markup){
+  const tmp = document.createElementNS("http://www.w3.org/2000/svg","g");
+  tmp.innerHTML = markup;
+  let out = "";
+  tmp.querySelectorAll("[data-fill]").forEach(el => {
+    const c = el.cloneNode(true);
+    c.setAttribute("style", "fill:" + el.getAttribute("data-fill") + ";stroke:none");
+    out += c.outerHTML;
+  });
+  return out;
+}
+
+/* ---------- Inicio ---------- */
+function syncVoicePicker(){
+  document.querySelectorAll(".vchip").forEach(b => b.setAttribute("aria-checked", String(b.dataset.v === voiceId)));
+}
+document.querySelectorAll(".vchip").forEach(b => b.addEventListener("click", () => {
+  voiceId = b.dataset.v; store.set("voz", voiceId); syncVoicePicker();
+  play("hola", "¡Hola, " + NAME + "! ¿Qué animal dibujamos hoy?", true);
+}));
+
+function syncLevel(){
+  document.querySelectorAll(".lvl").forEach(b => b.setAttribute("aria-checked", String(b.dataset.l === level)));
+}
+document.querySelectorAll(".lvl").forEach(b => b.addEventListener("click", () => {
+  level = b.dataset.l; store.set("nivel", level); syncLevel(); renderHome();
+}));
+
+function renderHome(){
+  const ls = list(), sc = STAR_COLOR[level];
+  const got = ls.filter(l => done[l.id]).length;
+  $("stickers").innerHTML = '<div class="row">' + ls.map(l => starSvg(!!done[l.id], sc)).join("") + "</div><span>" + got + " de " + ls.length + (level === "reto" ? " de artista" : " pegatinas") + "</span>";
+  const grid = $("grid");
+  grid.innerHTML = "";
+  ls.forEach((l, i) => {
+    const all = l.steps.map(s => s.d).join("");
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "card"; b.style.setProperty("--a", l.color);
+    b.setAttribute("aria-label", "Dibujar " + l.what + (done[l.id] ? ", ya tienes su pegatina" : ""));
+    b.innerHTML =
+      (done[l.id] ? '<span class="badge">' + starSvg(true, sc) + "</span>" : "") +
+      '<svg class="thumb" viewBox="-10 -10 420 420" aria-hidden="true">' +
+        "<g>" + fillsFrom(all) + "</g>" +
+        '<g class="lines" fill="none" stroke="#2F3A56" stroke-width="' + (l.reto ? 4.2 : 9) + '" stroke-linecap="round" stroke-linejoin="round" style="fill:none">' + all.replace(/data-fill="[^"]*"/g, "") + "</g>" +
+      "</svg>" +
+      '<span class="nm">' + l.card + "</span>" +
+      '<span class="steps-n">' + l.steps.length + " pasos</span>";
+    b.addEventListener("click", () => openLesson(i));
+    grid.appendChild(b);
+  });
+}
+
+/* ---------- Frases (las mismas que están grabadas) ---------- */
+function introText(l){
+  return l.reto ? "¡Vamos a dibujar " + l.what + "! Es un reto, así que ve despacito. Coge tu lápiz. "
+                : "¡Vamos a dibujar " + l.what + "! Coge tu lápiz. ";
+}
+function finText(l, already){
+  return l.reto
+    ? "¡Increíble, " + NAME + "! Has dibujado " + l.what + ". " + (already ? "¡Eres toda una artista!" : "¡Has ganado una pegatina de artista!")
+    : "¡Muy bien, " + NAME + "! Has dibujado " + l.what + ". " + (already ? "¡Cada vez te sale mejor!" : "¡Has ganado una pegatina!");
+}
+
+/* ---------- Lección ---------- */
+let L = null, step = 0;
+
+function openLesson(i){
+  L = list()[i]; step = 0;
+  $("canvas").setAttribute("class", L.reto ? "reto" : "");
+  $("lesson").classList.toggle("reto", !!L.reto);
+  $("lesson").style.setProperty("--a", L.color);
+  document.documentElement.style.setProperty("--a", L.color);
+  $("lessonTitle").textContent = L.title;
+  $("home").hidden = true; $("lesson").hidden = false;
+  window.scrollTo(0, 0);
+  keepAwake();
+  showStep(true);
+  preload(L.steps.map((_, k) => L.id + "-" + k));
+}
+
+function goHome(){
+  hush(); releaseAwake();
+  document.documentElement.style.setProperty("--a", "#D9622B");
+  $("lesson").hidden = true; $("home").hidden = false;
+  renderHome();
+  window.scrollTo(0, 0);
+}
+
+function animate(group){
+  const els = Array.from(group.querySelectorAll("*")).filter(e => typeof e.getTotalLength === "function" && !e.classList.contains("fillonly"));
+  if(reduce) return;
+  let delay = 0;
+  els.forEach(el => {
+    let len = 0;
+    try{ len = el.getTotalLength(); }catch(e){ len = 0; }
+    if(!len) return;
+    const dur = Math.min(2.2, Math.max(0.55, len / 260));
+    el.style.transition = "none";
+    el.style.strokeDasharray = len + " " + len;
+    el.style.strokeDashoffset = String(len);
+    el.getBoundingClientRect();
+    const d = delay;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.style.transition = "stroke-dashoffset " + dur + "s ease-in-out " + d + "s";
+      el.style.strokeDashoffset = "0";
+    }));
+    delay += dur * 0.85;
+  });
+}
+
+function showStep(first){
+  const s = L.steps[step], n = L.steps.length;
+  $("stepPanel").hidden = false; $("donePanel").hidden = true;
+  const gPrev = $("gPrev"), gNow = $("gNow"), gFills = $("gFills");
+  gFills.innerHTML = "";
+  $("art").removeAttribute("filter");
+  gPrev.setAttribute("class", "prev");
+  gPrev.innerHTML = L.steps.slice(0, step).map(x => x.d).join("");
+  gNow.innerHTML = s.d;
+  animate(gNow);
+
+  $("stepLabel").textContent = "Paso " + (step + 1) + " de " + n;
+  $("dots").innerHTML = L.steps.map((_, i) => '<span class="' + (i === step ? "on" : i < step ? "past" : "") + '"></span>').join("");
+  $("say").textContent = s.say;
+  $("prevBtn").disabled = step === 0;
+  $("nextLbl").textContent = step === n - 1 ? "¡Terminé!" : "Siguiente";
+
+  if(first && step === 0) play(L.id + "-0i", introText(L) + s.say);
+  else play(L.id + "-" + step, s.say);
+}
+
+function finish(){
+  hush();
+  const already = !!done[L.id];
+  done[L.id] = true; store.set("done", done);
+  const all = L.steps.map(x => x.d).join("");
+  const gFills = $("gFills"), gPrev = $("gPrev");
+  $("gNow").innerHTML = "";
+  gPrev.setAttribute("class", "ink");
+  gPrev.innerHTML = all;
+  gFills.innerHTML = fillsFrom(all);
+  if(L.reto) $("art").setAttribute("filter", "url(#pencil)");
+  Array.from(gFills.children).forEach(el => { el.style.opacity = "0"; });
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    Array.from(gFills.children).forEach(el => { el.style.opacity = "1"; });
+  }));
+
+  $("stepPanel").hidden = true; $("donePanel").hidden = false;
+  const st = $("sticker"); st.classList.remove("pop"); void st.offsetWidth; st.classList.add("pop");
+  st.style.background = L.reto ? STAR_COLOR.reto : STAR_COLOR.facil;
+  $("doneSay").textContent = (L.reto ? "¡Increíble, " : "¡Muy bien, ") + NAME + "! Has dibujado " + L.what + ".";
+  $("doneHint").textContent = L.reto
+    ? (already ? "Esta ya la tenías. ¡Eres toda una artista! Ahora colorea tu dibujo y sus sombras."
+               : "¡Pegatina de artista para tu colección! Ahora colorea tu dibujo y sus sombras.")
+    : (already ? "Esta pegatina ya la tenías. ¡Cada vez te sale mejor! Ahora colorea tu dibujo."
+               : "¡Pegatina nueva para tu colección! Ahora colorea tu dibujo con los colores que quieras.");
+  play(L.id + "-fin-" + (already ? "otra" : "nueva"), finText(L, already));
+}
+
+$("nextBtn").addEventListener("click", () => { if(step < L.steps.length - 1){ step++; showStep(false); } else finish(); });
+$("prevBtn").addEventListener("click", () => { if(step > 0){ step--; showStep(false); } });
+$("againBtn").addEventListener("click", () => showStep(false));
+$("backHome").addEventListener("click", goHome);
+$("otherBtn").addEventListener("click", goHome);
+$("redoBtn").addEventListener("click", () => { step = 0; showStep(true); });
+
+function syncVoice(){
+  $("voiceToggle").setAttribute("aria-pressed", String(voiceOn));
+  $("voiceLbl").textContent = voiceOn ? "Voz" : "Sin voz";
+  $("waves").style.display = voiceOn ? "" : "none";
+}
+$("voiceToggle").addEventListener("click", () => {
+  voiceOn = !voiceOn; store.set("voice", voiceOn); syncVoice();
+  if(voiceOn && L && !$("stepPanel").hidden) play(L.id + "-" + step, L.steps[step].say); else hush();
+});
+
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "visible" && !$("lesson").hidden) keepAwake();
+  if(document.visibilityState === "hidden") hush();
+});
+
+syncVoice();
+syncVoicePicker();
+syncLevel();
+renderHome();
+})();
+</script>
