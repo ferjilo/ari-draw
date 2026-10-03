@@ -96,11 +96,10 @@ button{font:inherit;color:inherit}
   background:var(--card);border:3px solid var(--ink);border-radius:18px;padding:10px 16px;box-shadow:0 5px 0 var(--ink)}
 .stickers .row{display:flex;gap:4px}
 .stickers .row svg{width:26px;height:26px}
-.name-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.name-form input{
-  font:inherit;font-weight:800;font-size:18px;color:var(--ink);
-  border:2.5px solid var(--ink);border-radius:14px;padding:8px 12px;width:12ch;min-height:44px;box-sizing:border-box;background:var(--card)
-}
+.voices{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.vlabel{font-weight:800;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-right:2px}
+.vchip{font-family:var(--font-display);font-size:18px}
+.vchip[aria-checked="true"]{background:var(--ink);color:#fff}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:18px}
 .card{
@@ -183,19 +182,16 @@ button{font:inherit;color:inherit}
       <div class="brand">
         <h1>Ari Draw</h1>
         <svg class="squiggle" viewBox="0 0 340 22" aria-hidden="true"><path d="M4 14 C 40 2, 70 22, 110 11 S 180 3, 220 13 S 300 20, 336 8" fill="none" stroke="var(--a)" stroke-width="6" stroke-linecap="round"/></svg>
-        <p class="hello" id="hello">¡Hola, <b>artista</b>! ¿Qué animal dibujamos hoy?</p>
+        <p class="hello" id="hello">¡Hola, <b>Ari</b>! ¿Qué animal dibujamos hoy?</p>
       </div>
       <div class="side">
         <div class="stickers" id="stickers" aria-live="polite"></div>
-        <button class="chip" id="nameToggle" type="button">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>
-          <span>Cambiar nombre</span>
-        </button>
-        <form class="name-form" id="nameForm" hidden>
-          <label for="nameInput" class="hint" style="font-size:16px">Nombre:</label>
-          <input id="nameInput" maxlength="16" autocomplete="off">
-          <button class="chip" type="submit">Guardar</button>
-        </form>
+        <div class="voices" role="radiogroup" aria-label="Elige la voz">
+          <span class="vlabel">Voz</span>
+          <button class="chip vchip" type="button" role="radio" data-v="lucia">Lucía</button>
+          <button class="chip vchip" type="button" role="radio" data-v="pablo">Pablo</button>
+          <button class="chip vchip" type="button" role="radio" data-v="dora">Dora</button>
+        </div>
       </div>
     </header>
 
@@ -335,37 +331,55 @@ const LESSONS = [
 
 /* ---------- Guardado local (solo en este dispositivo) ---------- */
 const store = {
-  get(k, d){ try{ const v = localStorage.getItem("lapiz." + k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
-  set(k, v){ try{ localStorage.setItem("lapiz." + k, JSON.stringify(v)); }catch(e){} }
+  get(k, d){ try{ const v = localStorage.getItem("ari." + k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem("ari." + k, JSON.stringify(v)); }catch(e){} }
 };
-let name = store.get("name", "");
+const NAME = "Ari";
+const VOICES = ["lucia", "pablo", "dora"];
 let done = store.get("done", {});
 let voiceOn = store.get("voice", true);
+let voiceId = store.get("voz", "lucia");
+if(VOICES.indexOf(voiceId) < 0) voiceId = "lucia";
 
-/* ---------- Voz ---------- */
+/* ---------- Voz: audios grabados con voz natural; la del sistema solo como reserva ---------- */
+const player = new Audio();
+player.preload = "auto";
 const hasSpeech = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
-let voice = null;
+let sysVoice = null;
 function pickVoice(){
   if(!hasSpeech) return;
   const vs = speechSynthesis.getVoices() || [];
   const norm = v => (v.lang || "").replace("_","-");
-  voice = vs.find(v => norm(v) === "es-ES" && /m[oó]nica|marisol|paulina|google/i.test(v.name))
-       || vs.find(v => norm(v) === "es-ES")
-       || vs.find(v => norm(v).startsWith("es"))
-       || null;
+  sysVoice = vs.find(v => norm(v) === "es-ES") || vs.find(v => norm(v).startsWith("es")) || null;
 }
 if(hasSpeech){ pickVoice(); try{ speechSynthesis.addEventListener("voiceschanged", pickVoice); }catch(e){} }
-function speak(text){
-  if(!hasSpeech || !voiceOn) return;
+function speakSystem(text){
+  if(!hasSpeech || !text) return;
   try{
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = "es-ES"; if(voice) u.voice = voice;
-    u.rate = 0.9; u.pitch = 1.1;
+    u.lang = "es-ES"; if(sysVoice) u.voice = sysVoice;
+    u.rate = 0.9;
     speechSynthesis.speak(u);
   }catch(e){}
 }
-function hush(){ if(hasSpeech){ try{ speechSynthesis.cancel(); }catch(e){} } }
+function hush(){
+  try{ player.pause(); }catch(e){}
+  if(hasSpeech){ try{ speechSynthesis.cancel(); }catch(e){} }
+}
+function play(key, text, force){
+  if(!voiceOn && !force) return;
+  hush();
+  try{
+    player.src = "audio/" + voiceId + "/" + key + ".mp3";
+    player.currentTime = 0;
+    const p = player.play();
+    if(p && p.catch) p.catch(err => { if(!err || err.name !== "AbortError") speakSystem(text); });
+  }catch(e){ speakSystem(text); }
+}
+function preload(keys){
+  keys.forEach(k => { try{ const a = new Audio(); a.preload = "auto"; a.src = "audio/" + voiceId + "/" + k + ".mp3"; }catch(e){} });
+}
 
 /* ---------- Pantalla encendida mientras dibuja ---------- */
 let wake = null;
@@ -390,8 +404,15 @@ function fillsFrom(markup){
 }
 
 /* ---------- Inicio ---------- */
+function syncVoicePicker(){
+  document.querySelectorAll(".vchip").forEach(b => b.setAttribute("aria-checked", String(b.dataset.v === voiceId)));
+}
+document.querySelectorAll(".vchip").forEach(b => b.addEventListener("click", () => {
+  voiceId = b.dataset.v; store.set("voz", voiceId); syncVoicePicker();
+  play("hola", "¡Hola, " + NAME + "! ¿Qué animal dibujamos hoy?", true);
+}));
+
 function renderHome(){
-  $("hello").innerHTML = "¡Hola, <b>" + (name ? escapeHtml(name) : "artista") + "</b>! ¿Qué animal dibujamos hoy?";
   const got = LESSONS.filter(l => done[l.id]).length;
   $("stickers").innerHTML = '<div class="row">' + LESSONS.map(l => starSvg(!!done[l.id])).join("") + "</div><span>" + got + " de " + LESSONS.length + " pegatinas</span>";
   const grid = $("grid");
@@ -413,7 +434,6 @@ function renderHome(){
     grid.appendChild(b);
   });
 }
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 
 /* ---------- Lección ---------- */
 let L = null, step = 0;
@@ -427,6 +447,7 @@ function openLesson(i){
   window.scrollTo(0, 0);
   keepAwake();
   showStep(true);
+  preload(L.steps.map((_, k) => L.id + "-" + k));
 }
 
 function goHome(){
@@ -475,8 +496,8 @@ function showStep(first){
   $("prevBtn").disabled = step === 0;
   $("nextLbl").textContent = step === n - 1 ? "¡Terminé!" : "Siguiente";
 
-  const intro = first ? "¡Vamos a dibujar " + L.what + "! Coge tu lápiz. " : "";
-  speak(intro + s.say);
+  if(first && step === 0) play(L.id + "-0i", "¡Vamos a dibujar " + L.what + "! Coge tu lápiz. " + s.say);
+  else play(L.id + "-" + step, s.say);
 }
 
 function finish(){
@@ -496,12 +517,12 @@ function finish(){
 
   $("stepPanel").hidden = true; $("donePanel").hidden = false;
   const st = $("sticker"); st.classList.remove("pop"); void st.offsetWidth; st.classList.add("pop");
-  const who = name ? ", " + name : "";
-  $("doneSay").textContent = "¡Muy bien" + who + "! Has dibujado " + L.what + ".";
+  $("doneSay").textContent = "¡Muy bien, " + NAME + "! Has dibujado " + L.what + ".";
   $("doneHint").textContent = already
     ? "Esta pegatina ya la tenías. ¡Cada vez te sale mejor! Ahora colorea tu dibujo."
     : "¡Pegatina nueva para tu colección! Ahora colorea tu dibujo con los colores que quieras.";
-  speak("¡Muy bien" + who + "! Has dibujado " + L.what + ". " + (already ? "¡Cada vez te sale mejor!" : "¡Has ganado una pegatina!"));
+  play(L.id + "-fin-" + (already ? "otra" : "nueva"),
+       "¡Muy bien, " + NAME + "! Has dibujado " + L.what + ". " + (already ? "¡Cada vez te sale mejor!" : "¡Has ganado una pegatina!"));
 }
 
 $("nextBtn").addEventListener("click", () => { if(step < L.steps.length - 1){ step++; showStep(false); } else finish(); });
@@ -515,31 +536,19 @@ function syncVoice(){
   $("voiceToggle").setAttribute("aria-pressed", String(voiceOn));
   $("voiceLbl").textContent = voiceOn ? "Voz" : "Sin voz";
   $("waves").style.display = voiceOn ? "" : "none";
-  if(!hasSpeech){ $("voiceToggle").hidden = true; }
 }
 $("voiceToggle").addEventListener("click", () => {
   voiceOn = !voiceOn; store.set("voice", voiceOn); syncVoice();
-  if(voiceOn && L && !$("stepPanel").hidden) speak(L.steps[step].say); else hush();
-});
-
-/* ---------- Nombre ---------- */
-$("nameToggle").addEventListener("click", () => {
-  const f = $("nameForm"); f.hidden = !f.hidden;
-  if(!f.hidden){ $("nameInput").value = name; $("nameInput").focus(); }
-});
-$("nameForm").addEventListener("submit", e => {
-  e.preventDefault();
-  name = $("nameInput").value.trim().slice(0, 16);
-  store.set("name", name);
-  $("nameForm").hidden = true;
-  renderHome();
+  if(voiceOn && L && !$("stepPanel").hidden) play(L.id + "-" + step, L.steps[step].say); else hush();
 });
 
 document.addEventListener("visibilitychange", () => {
   if(document.visibilityState === "visible" && !$("lesson").hidden) keepAwake();
+  if(document.visibilityState === "hidden") hush();
 });
 
 syncVoice();
+syncVoicePicker();
 renderHome();
 })();
 </script>
