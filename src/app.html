@@ -185,6 +185,31 @@ button{font:inherit;color:inherit}
 #donePanel .say{font-weight:700;font-size:clamp(28px,3.8vw,40px)}
 .done-actions{display:flex;flex-wrap:wrap;gap:14px}
 
+/* ---------- Rincón de papás (P7) ---------- */
+.parents-link{display:flex;justify-content:flex-end;margin-top:8px}
+.parents-link .chip{font-size:15px;min-height:44px;color:var(--ink-soft);box-shadow:0 4px 0 var(--edge);opacity:.85}
+.parents-link .chip svg{width:18px;height:18px}
+#parents{border:0;border-radius:28px;padding:0;width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 48px);
+  background:var(--bg);color:var(--ink);box-shadow:0 18px 60px rgba(43,42,53,.28)}
+#parents::backdrop{background:rgba(43,42,53,.45)}
+#parents .pin{padding:22px 22px 26px;-webkit-user-select:text;user-select:text}
+#parents h2{font-family:var(--font-display);font-weight:700;font-size:28px;margin:0 0 6px}
+#parents .muted{color:var(--ink-soft);font-size:16px;margin:0 0 16px;line-height:1.35}
+#parents .gate{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+#parents .gate label{font-family:var(--font-display);font-size:24px}
+#parents input{font:inherit;font-size:24px;width:110px;padding:10px 14px;border:0;border-radius:18px;background:var(--card);box-shadow:0 5px 0 var(--edge);color:var(--ink)}
+#parents .err{color:var(--acc-d);font-size:16px;min-height:1.3em;margin:10px 0 0}
+#parents h3{font-family:var(--font-display);font-weight:600;font-size:20px;margin:16px 0 8px}
+#parents ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+#parents li{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:8px 10px 8px 14px}
+#parents li .nm{flex:1;min-width:0}
+#parents li .nm b{font-family:var(--font-display);font-weight:600;font-size:18px;display:block}
+#parents li .nm small{color:var(--ink-soft);font-size:14px}
+#parents li .chip{min-height:40px;font-size:15px;padding:6px 12px;box-shadow:0 4px 0 var(--edge)}
+#parents .foot{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;margin-top:20px}
+#parents .btn{min-height:56px;font-size:19px}
+#parents .btn.warn{background:var(--acc);color:#fff;box-shadow:0 6px 0 var(--acc-d)}
+
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
@@ -220,6 +245,37 @@ button{font:inherit;color:inherit}
     <div class="grid" id="grid"></div>
 
     <p class="tip">Elige un dibujo. En cada paso aparece una línea de color: mírala, escucha y dibújala tú en tu papel. Al terminar, ganas una pegatina. En el nivel Reto los dibujos tienen pelo, plumas y sombras, como los de un ilustrador.</p>
+    <div class="parents-link">
+      <button class="chip" id="parentsBtn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        Rincón de papás
+      </button>
+    </div>
+
+    <dialog id="parents" aria-labelledby="parentsTitle">
+      <div class="pin">
+        <div id="pGate">
+          <h2 id="parentsTitle">Rincón de papás</h2>
+          <p class="muted">Solo para mayores. Escribe el resultado:</p>
+          <form class="gate" id="pGateForm">
+            <label for="pAns" id="pQ"></label>
+            <input id="pAns" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-describedby="pErr">
+            <button class="btn primary" type="submit">Entrar</button>
+          </form>
+          <p class="err" id="pErr" aria-live="polite"></p>
+          <div class="foot"><button class="btn" type="button" data-close>Cerrar</button></div>
+        </div>
+        <div id="pPanel" hidden>
+          <h2>Rincón de papás</h2>
+          <p class="muted">Pegatinas guardadas en este iPad. Quita una para que vuelva a salir sin marcar.</p>
+          <div id="pList"></div>
+          <div class="foot">
+            <button class="btn warn" type="button" id="pReset">Borrar todas las pegatinas</button>
+            <button class="btn" type="button" data-close>Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
   </section>
 
   <!-- LECCIÓN -->
@@ -590,7 +646,9 @@ function showStep(first){
 function finish(){
   hush();
   const already = !!done[L.id];
-  done[L.id] = true; store.set("done", done);
+  const prev = done[L.id];
+  done[L.id] = { n: (prev && prev.n ? prev.n : (prev ? 1 : 0)) + 1, t: Date.now() };
+  store.set("done", done);
   const all = L.steps.map(x => x.d).join("");
   const gFills = $("gFills"), gPrev = $("gPrev");
   $("gNow").innerHTML = "";
@@ -636,6 +694,54 @@ document.addEventListener("visibilitychange", () => {
   if(document.visibilityState === "visible" && !$("lesson").hidden) keepAwake();
   if(document.visibilityState === "hidden") hush();
 });
+
+/* ---------- Rincón de papás (P7): suma para entrar, qué ha dibujado y cuándo, quitar pegatinas ---------- */
+const dlg = $("parents");
+let pSum = 0;
+function pFmt(e){
+  if(!e) return "Sin pegatina";
+  const n = e.n || 1, t = e.t || 0;
+  const veces = n === 1 ? "1 vez" : n + " veces";
+  if(!t) return "Dibujado " + veces;
+  const d = new Date(t);
+  return "Dibujado " + veces + " · última: " + d.toLocaleDateString("es-ES", { day:"numeric", month:"short" }) +
+    " " + d.toLocaleTimeString("es-ES", { hour:"2-digit", minute:"2-digit" });
+}
+function pRender(){
+  const block = (name, ls) => "<h3>" + name + " · " + ls.filter(l => done[l.id]).length + " de " + ls.length + "</h3><ul>" +
+    ls.map(l => '<li><span class="nm"><b>' + l.card + "</b><small>" + pFmt(done[l.id]) + "</small></span>" +
+      (done[l.id] ? '<button class="chip" type="button" data-undo="' + l.id + '" aria-label="Quitar la pegatina de ' + l.card + '">Quitar</button>' : "") +
+      "</li>").join("") + "</ul>";
+  $("pList").innerHTML = block("Fácil", LESSONS) + block("Reto", RETO);
+  const r = $("pReset"); r.dataset.armed = ""; r.textContent = "Borrar todas las pegatinas";
+  r.disabled = !Object.keys(done).length;
+}
+function pSave(){ store.set("done", done); pRender(); renderHome(); }
+$("parentsBtn").addEventListener("click", () => {
+  const a = 6 + Math.floor(Math.random() * 13), b = 7 + Math.floor(Math.random() * 15);
+  pSum = a + b;
+  $("pQ").textContent = a + " + " + b + " =";
+  $("pAns").value = ""; $("pErr").textContent = "";
+  $("pGate").hidden = false; $("pPanel").hidden = true;
+  hush();
+  if(dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+  setTimeout(() => $("pAns").focus(), 50);
+});
+$("pGateForm").addEventListener("submit", ev => {
+  ev.preventDefault();
+  if(parseInt($("pAns").value, 10) === pSum){ $("pGate").hidden = true; $("pPanel").hidden = false; pRender(); }
+  else { $("pErr").textContent = "Esa no es. Prueba otra vez."; $("pAns").value = ""; $("pAns").focus(); }
+});
+$("pList").addEventListener("click", ev => {
+  const b = ev.target.closest("[data-undo]"); if(!b) return;
+  delete done[b.dataset.undo]; pSave();
+});
+$("pReset").addEventListener("click", () => {
+  const r = $("pReset");
+  if(!r.dataset.armed){ r.dataset.armed = "1"; r.textContent = "¿Seguro? Toca otra vez para borrar"; return; }
+  done = {}; pSave();
+});
+dlg.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => { if(dlg.close) dlg.close(); else dlg.removeAttribute("open"); }));
 
 syncVoice();
 syncVoicePicker();
