@@ -197,7 +197,7 @@ button{font:inherit;color:inherit}
     <header class="home-head">
       <div class="brand">
         <h1><span class="b1">Ari</span> <span class="b2">Dr</span><span class="b3">aw</span></h1>
-        <div class="hi"><svg class="mascot" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="34" r="28" fill="#FFB830"/><circle cx="23" cy="30" r="4" fill="#2B2A35"/><circle cx="41" cy="30" r="4" fill="#2B2A35"/><circle cx="17" cy="40" r="5" fill="#FF8C6B" opacity=".6"/><circle cx="47" cy="40" r="5" fill="#FF8C6B" opacity=".6"/><path d="M24 42 Q32 50 40 42" fill="none" stroke="#2B2A35" stroke-width="3.4" stroke-linecap="round"/><path d="M28 2 L36 2 L40 14 L24 14 Z" fill="#FF6B4A"/></svg><p class="hello bubble" id="hello">¡Hola, <b>Ari</b>! ¿Qué animal dibujamos hoy?</p></div>
+        <div class="hi"><svg class="mascot" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="34" r="28" fill="#FFB830"/><circle cx="23" cy="30" r="4" fill="#2B2A35"/><circle cx="41" cy="30" r="4" fill="#2B2A35"/><circle cx="17" cy="40" r="5" fill="#FF8C6B" opacity=".6"/><circle cx="47" cy="40" r="5" fill="#FF8C6B" opacity=".6"/><path d="M24 42 Q32 50 40 42" fill="none" stroke="#2B2A35" stroke-width="3.4" stroke-linecap="round"/><path d="M28 2 L36 2 L40 14 L24 14 Z" fill="#FF6B4A"/></svg><p class="hello bubble" id="hello">¡Hola, <b>Ari</b>! ¿Qué dibujamos hoy?</p></div>
       </div>
       <div class="side">
         <div class="stickers" id="stickers" aria-live="polite"></div>
@@ -219,7 +219,7 @@ button{font:inherit;color:inherit}
     </div>
     <div class="grid" id="grid"></div>
 
-    <p class="tip">Elige un animal. En cada paso aparece una línea de color: mírala, escucha y dibújala tú en tu papel. Al terminar, ganas una pegatina. En el nivel Reto los dibujos tienen pelo, plumas y sombras, como los de un ilustrador.</p>
+    <p class="tip">Elige un dibujo. En cada paso aparece una línea de color: mírala, escucha y dibújala tú en tu papel. Al terminar, ganas una pegatina. En el nivel Reto los dibujos tienen pelo, plumas y sombras, como los de un ilustrador.</p>
   </section>
 
   <!-- LECCIÓN -->
@@ -227,7 +227,7 @@ button{font:inherit;color:inherit}
     <div class="bar">
       <button class="chip" id="backHome" type="button">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span>Animales</span>
+        <span>Dibujos</span>
       </button>
       <h2 class="ttl" id="lessonTitle">El gato</h2>
       <button class="chip" id="voiceToggle" type="button" aria-pressed="true">
@@ -279,7 +279,7 @@ button{font:inherit;color:inherit}
         <p class="say" id="doneSay">¡Muy bien!</p>
         <p class="hint" id="doneHint">Ahora puedes colorear tu dibujo con los colores que quieras.</p>
         <div class="done-actions">
-          <button class="btn primary" id="otherBtn" type="button">Otro animal</button>
+          <button class="btn primary" id="otherBtn" type="button">Otro dibujo</button>
           <button class="btn" id="redoBtn" type="button">Dibujar otra vez</button>
         </div>
       </div>
@@ -354,6 +354,20 @@ const LESSONS = [
       d:'<circle cx="165" cy="205" r="12" data-fill="#2F3A56"/><circle cx="235" cy="205" r="12" data-fill="#2F3A56"/><circle cx="200" cy="250" r="14" data-fill="#F28AA0"/>' },
     { say:"La boca, los bigotes y dos mejillas redonditas.",
       d:'<path d="M200 264 Q200 282 184 284 M200 264 Q200 282 216 284"/><path d="M180 252 L110 242 M180 260 L112 270 M220 252 L290 242 M220 260 L288 270"/><circle cx="148" cy="270" r="11" data-fill="#F6A8B8"/><circle cx="252" cy="270" r="11" data-fill="#F6A8B8"/>' }
+  ]},
+  { id:"princesa", title:"La princesa", card:"Princesa", what:"una princesa", color:"#8E5BC9", steps:[
+    { say:"Dibuja un círculo. Es la cara.",
+      d:'<path class="fillonly" d="M174 200 Q150 214 140 196 C118 160 120 104 170 78 L230 78 C280 104 282 160 260 196 Q250 214 226 200 Z" data-fill="#A8652F"/><path d="M148 135 A52 52 0 1 0 252 135 A52 52 0 1 0 148 135 Z" data-fill="#F9D7B8"/>' },
+    { say:"Encima de la cabeza, una corona con tres picos.",
+      d:'<path d="M170 80 L164 46 L185 62 L200 38 L215 62 L236 46 L230 80 Z" data-fill="#F7CE4A"/>' },
+    { say:"El pelo: una curva a cada lado de la cara, desde la corona hasta los hombros. Y un flequillo ondulado en la frente.",
+      d:'<path d="M170 80 C120 104 118 160 140 196 Q150 214 174 200 M230 80 C280 104 282 160 260 196 Q250 214 226 200"/><path class="fillonly" d="M155.6 108 Q178 122 200 104 Q222 122 244.4 108 A52 52 0 0 0 155.6 108 Z" data-fill="#A8652F"/><path d="M155.6 108 Q178 122 200 104 Q222 122 244.4 108"/>' },
+    { say:"Dos ojos, dos mejillas y una sonrisa.",
+      d:'<path d="M174 138 A7 7 0 1 0 188 138 A7 7 0 1 0 174 138 Z" data-fill="#2F3A56"/><path d="M212 138 A7 7 0 1 0 226 138 A7 7 0 1 0 212 138 Z" data-fill="#2F3A56"/><path d="M157 158 A9 9 0 1 0 175 158 A9 9 0 1 0 157 158 Z" data-fill="#F6A8B8"/><path d="M225 158 A9 9 0 1 0 243 158 A9 9 0 1 0 225 158 Z" data-fill="#F6A8B8"/><path d="M186 160 Q200 174 214 160"/>' },
+    { say:"El vestido: un triángulo muy grande debajo de la cara, con la punta cortada y el borde de abajo ondulado.",
+      d:'<path d="M178 190 L222 190 L292 352 Q269 368 246 352 Q223 368 200 352 Q177 368 154 352 Q131 368 108 352 Z" data-fill="#F29CC6"/>' },
+    { say:"Los brazos con sus manos, un cinturón y un lazo en el medio.",
+      d:'<path d="M167 216 Q138 232 128 258 M233 216 Q262 232 272 258"/><path d="M117 266 A9 9 0 1 0 135 266 A9 9 0 1 0 117 266 Z" data-fill="#F9D7B8"/><path d="M265 266 A9 9 0 1 0 283 266 A9 9 0 1 0 265 266 Z" data-fill="#F9D7B8"/><path d="M153 248 L247 248"/><path d="M200 248 L180 236 L180 260 Z M200 248 L220 236 L220 260 Z" data-fill="#B98CF0"/>' }
   ]}
 ];
 const RETO = __RETO__;
@@ -441,7 +455,7 @@ function syncVoicePicker(){
 }
 document.querySelectorAll(".vchip").forEach(b => b.addEventListener("click", () => {
   voiceId = b.dataset.v; store.set("voz", voiceId); syncVoicePicker();
-  play("hola", "¡Hola, " + NAME + "! ¿Qué animal dibujamos hoy?", true);
+  play("hola", "¡Hola, " + NAME + "! ¿Qué dibujamos hoy?", true);
 }));
 
 function syncLevel(){

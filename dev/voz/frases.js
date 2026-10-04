@@ -9,7 +9,7 @@ const NAME = "Ari";
 eval(grab("const LESSONS = [", "\n];").replace("const LESSONS", "global.LESSONS"));
 eval(grab("function introText(l){", "\n}\n").replace("function introText", "global.introText = function"));
 eval(grab("function finText(l, already){", "\n}\n").replace("function finText", "global.finText = function"));
-const out = { hola: "¡Hola, " + NAME + "! ¿Qué animal dibujamos hoy?" };
+const out = { hola: "¡Hola, " + NAME + "! ¿Qué dibujamos hoy?" };
 for (const l of [...LESSONS, ...RETO]) {
   l.steps.forEach((s, i) => { out[l.id + "-" + i] = s.say; });
   out[l.id + "-0i"] = introText(l) + l.steps[0].say;

@@ -7,8 +7,9 @@ Abre un chat nuevo y pega esto, cambiando el número de paso:
 
 Un paso por hilo. Si un paso sale grande, Claude lo parte y deja la mitad apuntada aquí.
 
-## Estado actual (v1.4 · 3-oct-2026)
+## Estado actual (v1.5 · 4-oct-2026)
 - 5 animales en **Fácil** (gato, pez, tortuga, búho, ratón) y 5 en **Reto** (gato sentado, pez payaso, tortuga paseando, búho en la rama, ratón con queso).
+- 1 princesa en cada nivel: **Fácil** (princesa con corona y lazo, 6 pasos) y **Reto** (princesa con una rosa, 10 pasos). De momento aparece en la misma lista que los animales, al final; los textos de inicio ya dicen "dibujo" en vez de "animal".
 - Trazo animado paso a paso, puntos de progreso, Atrás / Otra vez / Siguiente.
 - 3 voces naturales grabadas (Lucía, Pablo, Dora), elegibles en el inicio.
 - Pegatinas: doradas (Fácil) y rosas "de artista" (Reto), guardadas en el iPad.
@@ -21,6 +22,8 @@ Marca `[x]` al terminar y añade una línea al registro.
 
 - [ ] **P1 · Funciona sin internet.** Manifest + service worker que guarde la app y los audios en el iPad, para usarla en el coche o el avión. Comprobar que una actualización nueva llega al abrirla con conexión.
 - [ ] **P2 · Animal nuevo (repetible).** Un animal por hilo, en Fácil y Reto, con sus voces. Lista de candidatos (tachar al hacerlo): perro · conejo · elefante · pingüino · caballo · mariposa · dinosaurio · unicornio.
+- [ ] **P10 · Princesas (repetible).** Una princesa por hilo, en Fácil y Reto, con sus voces. Diseños originales (nada de personajes de películas). Hecha: princesa con corona / princesa con la rosa. Ideas: princesa con varita · princesa en su castillo · princesa con capa de invierno · princesa bailando · princesa con su mascota.
+- [ ] **P11 · Pantalla de categorías.** Antes de la lista de dibujos, elegir categoría (**Animales**, **Princesas**, y las que vengan) con tarjetas grandes y su dibujo. Campo `cat` en cada lección (Fácil en `LESSONS`, Reto en cada `.py`); `ANIMALES_RETO` pasa a ser `RETO` con todas. Pegatinas por categoría y nivel, el botón "Dibujos" de la lección vuelve a la categoría, y guardar la última categoría en `ari.cat`. Regrabar frases genéricas si cambian.
 - [ ] **P3 · Mis dibujos.** Botón "Hacer foto a mi dibujo" al terminar: foto con la cámara del iPad, guardada en el propio iPad con el animal y la fecha, y una galería para verlas.
 - [ ] **P4 · Álbum de pegatinas.** Pantalla propia con todas las pegatinas (ganadas y por ganar), con la miniatura de cada animal.
 - [ ] **P5 · Sonidos.** Un sonido suave al pasar de paso y un "ta-chán" al terminar, generados por código (sin ficheros). Respetar el botón de voz.
@@ -42,3 +45,4 @@ Marca `[x]` al terminar y añade una línea al registro.
 - 2026-10-03 · v1.3 Código fuente, herramientas y este seguimiento en el repo.
 - 2026-10-03 · P9a Tres mockups de estilo en `dev/mockups/` (la app no cambia).
 - 2026-10-03 · v1.4 P9b Estilo Pastel Pop aplicado a toda la app.
+- 2026-10-04 · v1.5 P10 Primera princesa (Fácil + Reto, `dev/dibujos/princesa.py`) con las 3 voces. Textos "animal" → "dibujo" y `hola` regrabado. P11 (categorías) apuntado.
