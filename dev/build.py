@@ -5,7 +5,7 @@ here = os.path.dirname(os.path.abspath(__file__)); root = os.path.dirname(here)
 sys.path.insert(0, os.path.join(here, "dibujos"))
 
 # Orden de los animales del nivel Reto (cada uno es un fichero en dev/dibujos/<nombre>.py con LESSON)
-ANIMALES_RETO = ["gato", "pez", "tortuga", "buho", "raton", "princesa"]
+ANIMALES_RETO = ["gato", "pez", "tortuga", "buho", "raton", "princesa", "varita"]
 
 reto = []
 for n in ANIMALES_RETO:
